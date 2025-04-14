@@ -7,16 +7,16 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReceptionManagement {
+public class ReturnManagement {
     private PrintWriter out;
     private BufferedReader in;
 
-    public ReceptionManagement(PrintWriter out, BufferedReader in) {
+    public ReturnManagement(PrintWriter out, BufferedReader in) {
         this.out = out;
         this.in = in;
     }
 
-    public void loadReception(DefaultTableModel model) {
+    public void loadReturn(DefaultTableModel model) {
         try {
             out.println("LOAD_RECEPTION");
             model.setRowCount(0);
@@ -33,7 +33,7 @@ public class ReceptionManagement {
     }
 
 
-    public void addReception(DefaultTableModel model) {
+    public void addReturn(DefaultTableModel model) {
         JTextField nameField = new JTextField();
         JTextField priceField = new JTextField();
         JTextField quantityField = new JTextField(); // Поле для ввода количества
@@ -128,7 +128,7 @@ public class ReceptionManagement {
                     volumeField.setText("");
                 }
 
-                loadReception(model); // Перезагрузка списка продуктов
+                loadReturn(model); // Перезагрузка списка продуктов
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             } catch (NumberFormatException e) {
@@ -137,7 +137,7 @@ public class ReceptionManagement {
         }
     }
 
-    public void editReception(JTable table, DefaultTableModel model) {
+    public void editReturn(JTable table, DefaultTableModel model) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(null, "Выберите товар для редактирования.");
@@ -239,7 +239,7 @@ public class ReceptionManagement {
                         price + "," + quantity + "," + volume + "," + unit);
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadReception(model);
+                loadReturn(model);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
@@ -248,7 +248,7 @@ public class ReceptionManagement {
     }
 
 
-    public void deleteReception(JTable table, DefaultTableModel model) {
+    public void deleteReturn(JTable table, DefaultTableModel model) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(null, "Выберите товар для удаления.");
@@ -266,7 +266,7 @@ public class ReceptionManagement {
                 out.println("DELETE_RECEPTION," + model.getValueAt(selectedRow, 0));
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadReception(model);
+                loadReturn(model);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }

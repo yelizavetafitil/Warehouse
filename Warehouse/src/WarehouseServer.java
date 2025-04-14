@@ -206,21 +206,42 @@ public class WarehouseServer {
             }
         }
 
-        // Вставка нового товара
-        String query = "INSERT INTO products (name, category_id, warehouse_id, quantity, unit, price, volume) " +
+        String checkQuery1 = "SELECT COUNT(*) FROM products WHERE name = ? " +
+                "AND category_id = (SELECT category_id FROM categories WHERE category_name = ?) " +
+                "AND warehouse_id = (SELECT warehouse_id FROM Warehouses WHERE warehouse_name = ?) " +
+                "AND unit = ? AND price = ? AND volume = ?";
+
+        String insertQuery = "INSERT INTO products (name, category_id, warehouse_id, quantity, unit, price, volume) " +
                 "VALUES (?, (SELECT category_id FROM categories WHERE category_name = ?), " +
                 "(SELECT warehouse_id FROM Warehouses WHERE warehouse_name = ?), ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, name);
-            stmt.setString(2, category);
-            stmt.setString(3, warehouse);
-            stmt.setInt(4, quantity);
-            stmt.setString(5, unit);
-            stmt.setDouble(6, price);
-            stmt.setDouble(7, volume);
-            stmt.executeUpdate();
-            return "SUCCESS, Товар успешно добавлен";
+        try (PreparedStatement checkStmt = connection.prepareStatement(checkQuery1)) {
+            checkStmt.setString(1, name);
+            checkStmt.setString(2, category);
+            checkStmt.setString(3, warehouse);
+            checkStmt.setString(4, unit);
+            checkStmt.setDouble(5, price);
+            checkStmt.setDouble(6, volume);
+
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                return "ERROR, Товар уже существует с такими параметрами";
+            }
+
+            try (PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
+                insertStmt.setString(1, name);
+                insertStmt.setString(2, category);
+                insertStmt.setString(3, warehouse);
+                insertStmt.setInt(4, quantity);
+                insertStmt.setString(5, unit);
+                insertStmt.setDouble(6, price);
+                insertStmt.setDouble(7, volume);
+                insertStmt.executeUpdate();
+                return "SUCCESS, Товар успешно добавлен";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "ERROR, Произошла ошибка: " + e.getMessage();
         }
     }
 
@@ -328,11 +349,12 @@ public class WarehouseServer {
 
     public List<String> loadReception() throws SQLException {
         List<String> suppliers = new ArrayList<>();
-        String query = "SELECT trp.transaction_id, trp.name AS name, trp.quantity, trp.unit, trp.price, trp.volume, c.category_name, w.warehouse_name FROM transactions_reception_products trp JOIN categories c ON trp.category_id = c.category_id JOIN warehouses w ON trp.warehouse_id = w.warehouse_id;";
+        String query = "SELECT trp.id, trp.transaction_id, trp.name AS name, trp.quantity, trp.unit, trp.price, trp.volume, c.category_name, w.warehouse_name FROM transactions_reception_products trp JOIN categories c ON trp.category_id = c.category_id JOIN warehouses w ON trp.warehouse_id = w.warehouse_id;";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                suppliers.add(rs.getInt("transaction_id") + "," +
+                suppliers.add(rs.getInt("id") + "," +
+                        rs.getInt("transaction_id") + "," +
                         rs.getString("name") + "," +
                         rs.getInt("quantity")+ "," +
                         rs.getString("unit")+ "," +
@@ -376,24 +398,110 @@ public class WarehouseServer {
             stmt.setString(4, unit);
             stmt.setDouble(5, price);
             stmt.setDouble(6, volume);
-            stmt.setString(7, category);  // Добавляем category_id
-            stmt.setString(8, warehouse);  // Добавляем warehouse_id
+            stmt.setString(7, category);
+            stmt.setString(8, warehouse);
             stmt.executeUpdate();
-            return "Товар добавлен в транзакцию успешно.";
         }
+
+        String checkQuery1 = "SELECT product_id, quantity FROM products WHERE name = ? " +
+                "AND category_id = (SELECT category_id FROM categories WHERE category_name = ?) " +
+                "AND warehouse_id = (SELECT warehouse_id FROM Warehouses WHERE warehouse_name = ?) " +
+                "AND unit = ? AND price = ? AND volume = ?";
+
+        String insertQuery = "INSERT INTO products (name, category_id, warehouse_id, quantity, unit, price, volume) " +
+                "VALUES (?, (SELECT category_id FROM categories WHERE category_name = ?), " +
+                "(SELECT warehouse_id FROM Warehouses WHERE warehouse_name = ?), ?, ?, ?, ?)";
+
+        String updateQuery = "UPDATE products SET quantity = quantity + ? WHERE product_id = ?";
+
+        try (PreparedStatement checkStmt = connection.prepareStatement(checkQuery1)) {
+            checkStmt.setString(1, name);
+            checkStmt.setString(2, category);
+            checkStmt.setString(3, warehouse);
+            checkStmt.setString(4, unit);
+            checkStmt.setDouble(5, price);
+            checkStmt.setDouble(6, volume);
+
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next()) {
+                int productId = rs.getInt("product_id");
+                int existingQuantity = rs.getInt("quantity");
+
+                // Update quantity
+                try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+                    updateStmt.setInt(1, quantity);
+                    updateStmt.setInt(2, productId);
+                    updateStmt.executeUpdate();
+                }
+
+                return "SUCCESS, Количество товара обновлено на " + quantity;
+            } else {
+                // Insert new product
+                try (PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
+                    insertStmt.setString(1, name);
+                    insertStmt.setString(2, category);
+                    insertStmt.setString(3, warehouse);
+                    insertStmt.setInt(4, quantity);
+                    insertStmt.setString(5, unit);
+                    insertStmt.setDouble(6, price);
+                    insertStmt.setDouble(7, volume);
+                    insertStmt.executeUpdate();
+                }
+
+                return "SUCCESS, Товар успешно добавлен";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "ERROR, Произошла ошибка: " + e.getMessage();
+        }
+
     }
 
-    public String editReception(int warehouseId, String name, Double volume) {
-        String query = "UPDATE warehouses SET warehouse_name = ?, volume = ? WHERE warehouse_id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, name);
-            statement.setDouble(2, volume);
-            statement.setInt(3, warehouseId);
-            statement.executeUpdate();
+    public String editReception(int id, int transactionId, String name, int quantity, String unit, double price, double volume, String category, String warehouse) {
+        // Проверка свободного объема на складе
+        String checkQuery = "SELECT (w.volume - COALESCE(SUM(p.volume), 0)) AS free_volume " +
+                "FROM warehouses w " +
+                "LEFT JOIN products p ON w.warehouse_id = p.warehouse_id " +
+                "WHERE w.warehouse_name = ? " +
+                "GROUP BY w.warehouse_id";
+
+        try (PreparedStatement checkStmt = connection.prepareStatement(checkQuery)) {
+            checkStmt.setString(1, warehouse);
+            ResultSet rs = checkStmt.executeQuery();
+
+            double freeVolume = 0;
+            if (rs.next()) {
+                freeVolume = rs.getDouble("free_volume");
+            }
+
+            // Проверяем, достаточно ли свободного объема
+            if (freeVolume < volume) {
+                return "ERROR, Недостаточно свободного объема на складе";
+            }
         } catch (SQLException e) {
-            System.out.println("Ошибка изменения : " + e.getMessage());
+            throw new RuntimeException(e);
         }
-        return "Склад отредактирован успешно.";
+
+        String query = "UPDATE transactions_reception_products SET name = ?, " +
+                "category_id = (SELECT category_id FROM categories WHERE category_name = ?), " +
+                "warehouse_id = (SELECT warehouse_id FROM Warehouses WHERE warehouse_name = ?), " +
+                "quantity = ?, unit = ?, price = ?, volume = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, name);
+            stmt.setString(2, category);
+            stmt.setString(3, warehouse);
+            stmt.setInt(4, quantity);
+            stmt.setString(5, unit);
+            stmt.setDouble(6, price);
+            stmt.setDouble(7, volume);
+            stmt.setInt(8, id);
+
+            int updated = stmt.executeUpdate();
+            return updated > 0 ? "SUCCESS, Товар успешно обновлен" : "ERROR, Товар не найден";
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String deleteReception(int warehouseId) {
@@ -1193,16 +1301,16 @@ public class WarehouseServer {
 
             // parts[1] - ID, parts[2] - название, parts[3] - категория, parts[4] - склад, parts[5] - количество, parts[6] - цена, parts[7] - объем
             int id = Integer.parseInt(parts[1]);
-            String name = parts[2];
-            String category = parts[3];
-            String warehouse = parts[4];
-            int quantity = Integer.parseInt(parts[5]);
+            int idTran = Integer.parseInt(parts[2]);
+            String name = parts[3];
+            String category = parts[4];
+            String warehouse = parts[5];
+            int quantity = Integer.parseInt(parts[7]);
             double price = Double.parseDouble(parts[6]);
-            double volume = Double.parseDouble(parts[7]);
-            String unit = parts.length > 8 ? parts[8] : "шт"; // Если есть, используем указанный юнит, иначе по умолчанию "шт"
+            double volume = Double.parseDouble(parts[8]);
+            String unit = parts.length > 9 ? parts[9] : "шт"; // Если есть, используем указанный юнит, иначе по умолчанию "шт"
 
-            // Редактирование товара в транзакции
-         //   out.println(server.editReception(id, name, category, warehouse, quantity, unit, price, volume));
+           out.println(server.editReception(id, idTran, name, quantity, unit, price, volume, category, warehouse));
         }
 
         private void handleDeleteReception(String[] parts) throws SQLException {

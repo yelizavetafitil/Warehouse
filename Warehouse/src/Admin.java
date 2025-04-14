@@ -417,42 +417,64 @@ public class Admin {
         if (mainFrame != null) mainFrame.setVisible(false);
 
         transactionManagementFrame = new JFrame("Управление транзакциями");
-        transactionManagementFrame.setSize(800, 600);
+        transactionManagementFrame.setSize(400, 400);
         transactionManagementFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         transactionManagementFrame.setLocationRelativeTo(null);
         transactionManagementFrame.setLayout(new BorderLayout());
 
-        // Создаем панель с кнопками
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(3, 2, 10, 10)); // 3 строки, 2 колонки
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Кнопки для управления транзакциями
-        JButton receiveButton = createStyledButton("Прием товаров");
-        JButton shipmentButton = createStyledButton("Отгрузка товаров");
-        JButton orderShipmentButton = createStyledButton("Отгрузка заказов");
-        JButton returnButton = createStyledButton("Возврат товаров");
-        JButton transferButton = createStyledButton("Перемещение товаров");
-        JButton backButton = createStyledButton("Назад");
-        backButton.addActionListener(e -> {
-            transactionManagementFrame.dispose();
-            mainFrame.setVisible(true);
-        });
+        // Создаем панель для кнопок
+        JPanel buttonPanel = new JPanel(new GridLayout(0, 1, 10, 10));
+        buttonPanel.setMaximumSize(new Dimension(400, 300)); // Ограничиваем максимальный размер панели кнопок
 
-        receiveButton.addActionListener(e -> showReceptionManagement());
+        String[] buttonLabels = {
+                "Прием товаров",
+                "Отгрузка товаров",
+                "Возврат товаров",
+                "Перемещение товаров",
+                "Назад"
+        };
 
-        // Добавляем кнопки на панель
-        buttonPanel.add(receiveButton);
-        buttonPanel.add(shipmentButton);
-        buttonPanel.add(orderShipmentButton);
-        buttonPanel.add(returnButton);
-        buttonPanel.add(transferButton);
-        buttonPanel.add(backButton);
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            button.setFont(new Font("Arial", Font.BOLD, 14));
+            button.setBackground(new Color(70, 130, 180)); // Цвет кнопки
+            button.setForeground(Color.WHITE);
+            button.setFocusPainted(false);
+            button.setPreferredSize(new Dimension(240, 40)); // Устанавливаем размер кнопок
+            button.addActionListener(e -> handleButtonClick2(label));
+            buttonPanel.add(button);
+        }
 
-        // Добавляем панель с кнопками в основное окно
-        transactionManagementFrame.add(buttonPanel, BorderLayout.CENTER);
-
-        // Показать окно
+        // Центрируем кнопку панель в панели
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(buttonPanel);
+        transactionManagementFrame.add(panel, BorderLayout.CENTER);
         transactionManagementFrame.setVisible(true);
+    }
+
+    private void handleButtonClick2(String label) {
+        switch (label) {
+            case "Прием товаров":
+                showReceptionManagement();
+                break;
+            case "Отгрузка товаров":
+                showReturnManagement();
+                break;
+            case "Возврат товаров":
+
+                break;
+            case "Перемещение товаров":
+
+                break;
+            case "Назад":
+                transactionManagementFrame.dispose();
+                mainFrame.setVisible(true);
+                break;
+        }
     }
 
     private void showReceptionManagement() {
@@ -465,7 +487,7 @@ public class Admin {
         receptionFrame.setLayout(new BorderLayout());
 
         DefaultTableModel receptionModel = new DefaultTableModel(
-                new String[]{ "ID транзакции", "Название", "Количество", "Ед. изм.", "Цена", "Общий объем(м^3)", "Категория", "Склад"}, 0);
+                new String[]{"ID", "ID транзакции", "Название", "Количество", "Ед. изм.", "Цена", "Общий объем(м^3)", "Категория", "Склад"}, 0);
         JTable receptionTable = new JTable(receptionModel);
         receptionTable.setFillsViewportHeight(true);
         receptionTable.setRowHeight(25);
@@ -504,6 +526,58 @@ public class Admin {
         receptionFrame.add(splitPane);
         receptionFrame.setVisible(true);
     }
+
+
+    private void showReturnManagement() {
+        if (mainFrame != null) mainFrame.setVisible(false);
+
+        JFrame returnFrame = new JFrame("Прием товаров");
+        returnFrame.setSize(800, 600);
+        returnFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        returnFrame.setLocationRelativeTo(null);
+        returnFrame.setLayout(new BorderLayout());
+
+        DefaultTableModel returnModel = new DefaultTableModel(
+                new String[]{ "ID", "ID транзакции", "Название", "Количество", "Ед. изм.", "Цена", "Общий объем(м^3)", "Категория", "Склад"}, 0);
+        JTable returnTable = new JTable(returnModel);
+        returnTable.setFillsViewportHeight(true);
+        returnTable.setRowHeight(25);
+        returnTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        returnTable.setSelectionForeground(Color.BLACK);
+
+        ReturnManagement returnManagement = new ReturnManagement(out, in);
+        returnManagement.loadReturn(returnModel);
+
+        JButton refreshButton = createStyledButton("Обновить");
+        JButton addButton = createStyledButton("Добавить");
+        JButton editButton = createStyledButton("Изменить");
+        JButton deleteButton = createStyledButton("Удалить");
+        JButton backButton = createStyledButton("Назад");
+
+        refreshButton.addActionListener(e -> returnManagement.loadReturn(returnModel));
+        addButton.addActionListener(e -> returnManagement.addReturn(returnModel));
+        editButton.addActionListener(e -> returnManagement.editReturn(returnTable, returnModel));
+        deleteButton.addActionListener(e -> returnManagement.deleteReturn(returnTable, returnModel));
+        backButton.addActionListener(e -> {
+            returnFrame.dispose();
+            transactionManagementFrame.setVisible(true);
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(refreshButton);
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(backButton);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                new JScrollPane(returnTable), buttonPanel);
+        splitPane.setDividerLocation(450);
+
+        returnFrame.add(splitPane);
+        returnFrame.setVisible(true);
+    }
+
 
     private void showWarehouseManagement(){
         if (mainFrame != null) mainFrame.setVisible(false);
