@@ -82,7 +82,19 @@ public class WarehouseClient extends JFrame {
             if (response.contains("Уровень доступа: 5")) {
                 dispose();
                 SwingUtilities.invokeLater(() -> new Admin(socket));
-            } else {
+            } else if (response.contains("Уровень доступа: 4")) {
+                dispose();
+                SwingUtilities.invokeLater(() -> new Storekeeper(socket));
+            } else if (response.contains("Уровень доступа: 3")) {
+                dispose();
+                SwingUtilities.invokeLater(() -> new Manager(socket));
+            }else if (response.contains("Уровень доступа: 2")) {
+                dispose();
+                SwingUtilities.invokeLater(() -> new Worker(socket));
+            }else if (response.contains("Уровень доступа: 1")) {
+                dispose();
+                SwingUtilities.invokeLater(() -> new Analyst(socket));
+            }else {
                 responseArea.setText("Недостаточно прав для доступа к панели администратора");
                 socket.close(); // Закрываем сокет, если не нужен Admin
             }

@@ -3,14 +3,14 @@ import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 
-public class Admin {
+public class Storekeeper {
     private JFrame mainFrame;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private Management management;
 
-    public Admin(Socket existingSocket) {
+    public Storekeeper(Socket existingSocket) {
         this.socket = existingSocket;
         try {
             this.out = new PrintWriter(socket.getOutputStream(), true);
@@ -24,7 +24,7 @@ public class Admin {
     }
 
     private void showMainMenu() {
-        mainFrame = new JFrame("Главное меню администратора");
+        mainFrame = new JFrame("Главное меню кладовщика");
         mainFrame.setSize(400, 400);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.setLocationRelativeTo(null);
@@ -39,14 +39,11 @@ public class Admin {
         buttonPanel.setMaximumSize(new Dimension(400, 300)); // Ограничиваем максимальный размер панели кнопок
 
         String[] buttonLabels = {
-                "Управление пользователями",
                 "Управление категориями",
                 "Управление товарами",
-                "Управление поставщиками",
                 "Управление заказами",
                 "Управление позициями заказов",
                 "Управление транзакциями",
-                "Управление складами",
                 "Назад"
         };
 
@@ -70,17 +67,11 @@ public class Admin {
 
     private void handleButtonClick(String label) {
         switch (label) {
-            case "Управление пользователями":
-                management.showUserManagement(mainFrame);
-                break;
             case "Управление категориями":
                 management.showCategoryManagement(mainFrame);
                 break;
             case "Управление товарами":
                 management.showProductManagement(mainFrame);
-                break;
-            case "Управление поставщиками":
-                management.showSupplierManagement(mainFrame);
                 break;
             case "Управление заказами":
                 management.showOrderManagement(mainFrame);
@@ -91,15 +82,12 @@ public class Admin {
             case "Управление транзакциями":
                 management.showTransactionManagement(mainFrame);
                 break;
-            case "Управление складами":
-                management.showWarehouseManagement(mainFrame);
-                break;
             case "Назад":
                 mainFrame.dispose();
                 new WarehouseClient().setVisible(true);
                 break;
         }
     }
-   
+
 
 }

@@ -4,28 +4,26 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
-public class ReturnManagement {
+public class MoveManagement {
     private PrintWriter out;
     private BufferedReader in;
 
-    public ReturnManagement(PrintWriter out, BufferedReader in) {
+    public MoveManagement(PrintWriter out, BufferedReader in) {
         this.out = out;
         this.in = in;
     }
 
-    public void loadReturn(DefaultTableModel model) {
+    public void loadMove(DefaultTableModel model) {
         try {
-            out.println("LOAD_RETURN");
+            out.println("LOAD_MOVE");
             model.setRowCount(0);
 
             String response;
             while ((response = in.readLine()) != null) {
                 if (response.equals("END")) break;
                 String[] data = response.split(",");
-                model.addRow(new Object[]{data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]});
+                model.addRow(new Object[]{data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9]});
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки: " + e.getMessage());
@@ -33,111 +31,105 @@ public class ReturnManagement {
     }
 
 
-    public void addReturn(DefaultTableModel model) {
-        JTextField nameField = new JTextField();
-        JTextField priceField = new JTextField();
-        JTextField quantityField = new JTextField(); // Поле для ввода количества
-        JTextField volumeField = new JTextField(); // Поле для ввода объема
-        JComboBox<String> unitCombo = new JComboBox<>(new String[] {"шт", "уп", "литр", "поддон"});
-        JComboBox<String> categoryCombo = new JComboBox<>();
-        JComboBox<String> warehouseCombo = new JComboBox<>(); // Комбобокс для выбора склада
+    public void addMove(JTable table, DefaultTableModel model, DefaultTableModel shmodel) {
 
-        try {
-            // Загрузка категорий
-            out.println("GET_CATEGORIES");
-            String response;
-            categoryCombo.removeAllItems(); // Очищаем комбобокс перед загрузкой категорий
-            while ((response = in.readLine()) != null) {
-                if (response.equals("END")) break;
-                categoryCombo.addItem(response.trim());
-            }
+        int[] selectedRows = table.getSelectedRows();
 
-            // Загрузка складов
-            out.println("GET_WAREHOUSES");
-            while ((response = in.readLine()) != null) {
-                if (response.equals("END")) break;
-                warehouseCombo.addItem(response.trim());
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Ошибка загрузки: " + e.getMessage());
+        if (selectedRows.length == 0) {
+            JOptionPane.showMessageDialog(null, "Пожалуйста, выберите хотя бы один товар для отгрузки.");
+            return;
         }
 
-        // Создание панели для ввода данных
-        JPanel panel = new JPanel(new GridLayout(7, 2));
-        panel.add(new JLabel("Название:"));
-        panel.add(nameField);
-        panel.add(new JLabel("Категория:"));
-        panel.add(categoryCombo);
-        panel.add(new JLabel("Склад:"));
-        panel.add(warehouseCombo);
-        panel.add(new JLabel("Цена:"));
-        panel.add(priceField);
-        panel.add(new JLabel("Количество:"));
-        panel.add(quantityField);
-        panel.add(new JLabel("Общий объем(м^3):"));
-        panel.add(volumeField);
-        panel.add(new JLabel("Единица измерения:"));
-        panel.add(unitCombo);
-        // Отображение диалогового окна с подтверждением
-        int result = JOptionPane.showConfirmDialog(
-                null, panel, "Добавить товар",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        try{
 
-        if (result == JOptionPane.OK_OPTION) {
 
-            try {
-                // Создание транзакции на прием товаров
-                out.println("CREATE_RETURN_TRANSACTION");
-                String transactionResponse = in.readLine();
-                int transactionId = Integer.parseInt(transactionResponse); // Получаем ID транзакции
+            out.println("CREATE_MOVE_TRANSACTION");
+            String transactionResponse = in.readLine();
+            int transactionId = Integer.parseInt(transactionResponse);
 
-                // Ввод товаров в цикле
-                while (true) {
-                    // Отображение диалогового окна для ввода товара
-                    int productResult = JOptionPane.showConfirmDialog(
-                            null, panel, "Добавить товар в транзакцию (или отмените для завершения)",
-                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-                    if (productResult == JOptionPane.CANCEL_OPTION) {
-                        break; // Выход из цикла, если пользователь отменил
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
+
+                JPanel panel = new JPanel(new GridLayout(4, 2));
+                JTextField quantityField = new JTextField();
+                JTextField volumeField = new JTextField();
+                JComboBox<String> warehouseCombo = new JComboBox<>();
+
+                try {
+                    String response;
+                    out.println("GET_WAREHOUSES");
+                    String existingWarehouse = (String) model.getValueAt(selectedRows[i], 7);
+                    while ((response = in.readLine()) != null) {
+                        if (response.equals("END")) break;
+                        if (!response.trim().equals(existingWarehouse)) {
+                            warehouseCombo.addItem(response.trim());
+                        }
                     }
-
-                    String name = nameField.getText().trim();
-                    String category = (String) categoryCombo.getSelectedItem();
-                    String warehouse = (String) warehouseCombo.getSelectedItem();
-                    String quantity = quantityField.getText().trim();
-                    String price = priceField.getText().trim();
-                    String volume = volumeField.getText().trim();
-                    String unit = (String) unitCombo.getSelectedItem();
-
-                    // Проверка на пустые значения
-                    if (name.isEmpty() || quantity.isEmpty() || price.isEmpty() || volume.isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "Пожалуйста, заполните все поля товара.");
-                        continue; // Продолжить цикл, если есть пустые поля
-                    }
-
-                    // Добавление товара в транзакцию
-                    out.println("ADD_RETURN," + transactionId + "," + name + "," + quantity + "," + price + "," + volume + "," + unit + "," + category + "," + warehouse);
-                    String productResponse = in.readLine();
-                    JOptionPane.showMessageDialog(null, productResponse);
-
-                    // Очистка полей для следующего товара
-                    nameField.setText("");
-                    quantityField.setText("");
-                    priceField.setText("");
-                    volumeField.setText("");
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, "Ошибка загрузки: " + e.getMessage());
                 }
 
-                loadReturn(model); // Перезагрузка списка продуктов
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Ошибка получения ID транзакции.");
+
+                panel.add(new JLabel("Название:"));
+                panel.add(new JLabel(String.valueOf(model.getValueAt(selectedRows[i], 1))));
+                panel.add(new JLabel("Количество:"));
+                panel.add(quantityField);
+                panel.add(new JLabel("Объем:"));
+                panel.add(volumeField);
+                panel.add(new JLabel("Новый склад:"));
+                panel.add(warehouseCombo);
+
+                int result = JOptionPane.showConfirmDialog(null, panel, "Добавить отгрузку", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    int totalQuantity = Integer.parseInt(quantityField.getText());
+                    double totalVolume = Double.parseDouble(volumeField.getText());
+
+                    Object  avQuantity = model.getValueAt(selectedRows[i], 3);
+                    Object  avVolume =  model.getValueAt(selectedRows[i], 6);
+
+                    int availableQuantity =  Integer.parseInt((String) avQuantity);
+                    double availableVolume = Double.parseDouble((String)avVolume);
+
+                    // Проверка наличия достаточного количества и объема
+                    if (totalQuantity > availableQuantity) {
+                        JOptionPane.showMessageDialog(null, "Недостаточно количества для товара: " + model.getValueAt(selectedRows[i], 1));
+                        return;
+                    }
+                    if (totalVolume > availableVolume) {
+                        JOptionPane.showMessageDialog(null, "Недостаточно объема для товара: " + model.getValueAt(selectedRows[i], 1));
+                        return;
+                    }
+                    if (totalQuantity == 0) {
+                        JOptionPane.showMessageDialog(null, "Недостаточно количества для товара: " + model.getValueAt(selectedRows[i], 1));
+                        return;
+                    }
+                    if (totalVolume == 0) {
+                        JOptionPane.showMessageDialog(null, "Недостаточно объема для товара: " + model.getValueAt(selectedRows[i], 1));
+                        return;
+                    }
+                    String warehouse = (String) warehouseCombo.getSelectedItem();
+                    out.println("ADD_MOVE," + transactionId + "," +
+                            model.getValueAt(selectedRows[i], 1) + "," +
+                            totalQuantity + "," +
+                            model.getValueAt(selectedRows[i], 5) + "," +
+                            totalVolume + "," +
+                            model.getValueAt(selectedRows[i], 4) + "," +
+                            model.getValueAt(selectedRows[i], 2) + "," +
+                            model.getValueAt(selectedRows[i], 7)
+                            + "," +
+                            warehouse
+                    );
+                    String productResponse = in.readLine();
+                    JOptionPane.showMessageDialog(null, productResponse);
+                }
             }
+            loadMove(shmodel);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
         }
     }
 
-    public void editReturn(JTable table, DefaultTableModel model) {
+    public void editMove(JTable table, DefaultTableModel model) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(null, "Выберите товар для редактирования.");
@@ -156,6 +148,7 @@ public class ReturnManagement {
 
         JComboBox<String> categoryCombo = new JComboBox<>();
         JComboBox<String> warehouseCombo = new JComboBox<>();
+        JComboBox<String> warehousePastCombo = new JComboBox<>();
 
         // Загрузка категорий
         try {
@@ -195,13 +188,35 @@ public class ReturnManagement {
         String currentWarehouse = model.getValueAt(selectedRow, 8).toString(); // Предположим, что склад находится в 7 столбце
         warehouseCombo.setSelectedItem(currentWarehouse);
 
-        JPanel panel = new JPanel(new GridLayout(7, 2));
+        try {
+            out.println("GET_WAREHOUSES");
+            String response;
+            warehousePastCombo.removeAllItems(); // Очищаем комбобокс перед загрузкой складов
+
+            while ((response = in.readLine()) != null) {
+                if (response.equals("END")) break;
+                warehousePastCombo.addItem(response.trim());
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Ошибка загрузки складов: " + e.getMessage());
+        }
+
+        // Установка текущего склада
+        warehousePastCombo.setSelectedItem(model.getValueAt(selectedRow, 9).toString()); // Установка склада
+
+        // Установка выбранного склада
+        String currentWarehousePast = model.getValueAt(selectedRow, 9).toString(); // Предположим, что склад находится в 7 столбце
+        warehousePastCombo.setSelectedItem(currentWarehousePast);
+
+        JPanel panel = new JPanel(new GridLayout(8, 2));
         panel.add(new JLabel("Название:"));
         panel.add(nameField);
         panel.add(new JLabel("Категория:"));
         panel.add(categoryCombo);
         panel.add(new JLabel("Склад:"));
         panel.add(warehouseCombo);
+        panel.add(new JLabel("Прошлый склад:"));
+        panel.add(warehousePastCombo);
         panel.add(new JLabel("Цена:"));
         panel.add(priceField);
         panel.add(new JLabel("Количество:"));
@@ -220,6 +235,7 @@ public class ReturnManagement {
             String name = nameField.getText().trim();
             String category = (String) categoryCombo.getSelectedItem();
             String warehouse = (String) warehouseCombo.getSelectedItem();
+            String warehouse_past = (String) warehousePastCombo.getSelectedItem();
             String quantity = quantityField.getText().trim();
             String price = priceField.getText().trim();
             String volume = volumeField.getText().trim();
@@ -233,13 +249,13 @@ public class ReturnManagement {
 
             // Отправка данных на сервер
             try {
-                out.println("EDIT_RETURN," + model.getValueAt(selectedRow, 0) +
+                out.println("EDIT_MOVE," + model.getValueAt(selectedRow, 0) +
                         ","+ model.getValueAt(selectedRow, 1) + "," +
                         name + "," + category + "," + warehouse + "," +
-                        price + "," + quantity + "," + volume + "," + unit);
+                        price + "," + quantity + "," + volume + "," + unit+ "," + warehouse_past);
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadReturn(model);
+                loadMove(model);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
@@ -248,7 +264,7 @@ public class ReturnManagement {
     }
 
 
-    public void deleteReturn(JTable table, DefaultTableModel model) {
+    public void deleteMove(JTable table, DefaultTableModel model) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(null, "Выберите товар для удаления.");
@@ -263,10 +279,10 @@ public class ReturnManagement {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                out.println("DELETE_RETURN," + model.getValueAt(selectedRow, 0));
+                out.println("DELETE_MOVE," + model.getValueAt(selectedRow, 0));
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadReturn(model);
+                loadMove(model);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
