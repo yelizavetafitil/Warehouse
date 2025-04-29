@@ -36,7 +36,7 @@ public class MoveManagement {
         int[] selectedRows = table.getSelectedRows();
 
         if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(null, "Пожалуйста, выберите хотя бы один товар для отгрузки.");
+            JOptionPane.showMessageDialog(null, "Пожалуйста, выберите хотя бы один товар для перемещения.");
             return;
         }
 
@@ -79,7 +79,7 @@ public class MoveManagement {
                 panel.add(new JLabel("Новый склад:"));
                 panel.add(warehouseCombo);
 
-                int result = JOptionPane.showConfirmDialog(null, panel, "Добавить отгрузку", JOptionPane.OK_CANCEL_OPTION);
+                int result = JOptionPane.showConfirmDialog(null, panel, "Добавить перемещение", JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.OK_OPTION) {
                     int totalQuantity = Integer.parseInt(quantityField.getText());
                     double totalVolume = Double.parseDouble(volumeField.getText());
@@ -90,7 +90,7 @@ public class MoveManagement {
                     int availableQuantity =  Integer.parseInt((String) avQuantity);
                     double availableVolume = Double.parseDouble((String)avVolume);
 
-                    // Проверка наличия достаточного количества и объема
+                     
                     if (totalQuantity > availableQuantity) {
                         JOptionPane.showMessageDialog(null, "Недостаточно количества для товара: " + model.getValueAt(selectedRows[i], 1));
                         return;
@@ -138,11 +138,11 @@ public class MoveManagement {
 
         JOptionPane.showMessageDialog(null, "Товар редактируется только в этой таблице, остальные изменения вносятся вручную.");
 
-        // Поля для редактирования
+         
         JTextField nameField = new JTextField(model.getValueAt(selectedRow, 2).toString());
         JTextField priceField = new JTextField(model.getValueAt(selectedRow, 5).toString());
         JTextField quantityField = new JTextField(model.getValueAt(selectedRow, 3).toString());
-        JTextField volumeField = new JTextField(model.getValueAt(selectedRow, 6).toString()); // Добавлено поле для объема
+        JTextField volumeField = new JTextField(model.getValueAt(selectedRow, 6).toString());  
         JComboBox<String> unitCombo = new JComboBox<>(new String[] {"шт", "уп", "литр", "поддон"});
         unitCombo.setSelectedItem(model.getValueAt(selectedRow, 4));
 
@@ -150,11 +150,11 @@ public class MoveManagement {
         JComboBox<String> warehouseCombo = new JComboBox<>();
         JComboBox<String> warehousePastCombo = new JComboBox<>();
 
-        // Загрузка категорий
+         
         try {
             out.println("GET_CATEGORIES");
             String response;
-            categoryCombo.removeAllItems(); // Очищаем комбобокс перед загрузкой категорий
+            categoryCombo.removeAllItems();  
 
             while ((response = in.readLine()) != null) {
                 if (response.equals("END")) break;
@@ -164,14 +164,14 @@ public class MoveManagement {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки категорий: " + e.getMessage());
         }
 
-        // Установка текущей категории
-        categoryCombo.setSelectedItem(model.getValueAt(selectedRow, 7).toString()); // Установка категории
+         
+        categoryCombo.setSelectedItem(model.getValueAt(selectedRow, 7).toString());  
 
-        // Загрузка складов
+         
         try {
             out.println("GET_WAREHOUSES");
             String response;
-            warehouseCombo.removeAllItems(); // Очищаем комбобокс перед загрузкой складов
+            warehouseCombo.removeAllItems();  
 
             while ((response = in.readLine()) != null) {
                 if (response.equals("END")) break;
@@ -181,17 +181,17 @@ public class MoveManagement {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки складов: " + e.getMessage());
         }
 
-        // Установка текущего склада
-        warehouseCombo.setSelectedItem(model.getValueAt(selectedRow, 8).toString()); // Установка склада
+         
+        warehouseCombo.setSelectedItem(model.getValueAt(selectedRow, 8).toString());  
 
-        // Установка выбранного склада
-        String currentWarehouse = model.getValueAt(selectedRow, 8).toString(); // Предположим, что склад находится в 7 столбце
+         
+        String currentWarehouse = model.getValueAt(selectedRow, 8).toString();  
         warehouseCombo.setSelectedItem(currentWarehouse);
 
         try {
             out.println("GET_WAREHOUSES");
             String response;
-            warehousePastCombo.removeAllItems(); // Очищаем комбобокс перед загрузкой складов
+            warehousePastCombo.removeAllItems();  
 
             while ((response = in.readLine()) != null) {
                 if (response.equals("END")) break;
@@ -201,11 +201,11 @@ public class MoveManagement {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки складов: " + e.getMessage());
         }
 
-        // Установка текущего склада
-        warehousePastCombo.setSelectedItem(model.getValueAt(selectedRow, 9).toString()); // Установка склада
+         
+        warehousePastCombo.setSelectedItem(model.getValueAt(selectedRow, 9).toString());  
 
-        // Установка выбранного склада
-        String currentWarehousePast = model.getValueAt(selectedRow, 9).toString(); // Предположим, что склад находится в 7 столбце
+         
+        String currentWarehousePast = model.getValueAt(selectedRow, 9).toString();  
         warehousePastCombo.setSelectedItem(currentWarehousePast);
 
         JPanel panel = new JPanel(new GridLayout(8, 2));
@@ -226,7 +226,7 @@ public class MoveManagement {
         panel.add(new JLabel("Единица измерения:"));
         panel.add(unitCombo);
 
-        // Отображение диалогового окна с подтверждением
+         
         int result = JOptionPane.showConfirmDialog(
                 null, panel, "Редактировать товар.",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -241,13 +241,13 @@ public class MoveManagement {
             String volume = volumeField.getText().trim();
             String unit = (String) unitCombo.getSelectedItem();
 
-            // Проверка на пустые значения
+             
             if (name.isEmpty() || category == null || warehouse == null || quantity.isEmpty() || price.isEmpty() || volume.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Пожалуйста, заполните все поля.");
                 return;
             }
 
-            // Отправка данных на сервер
+             
             try {
                 out.println("EDIT_MOVE," + model.getValueAt(selectedRow, 0) +
                         ","+ model.getValueAt(selectedRow, 1) + "," +

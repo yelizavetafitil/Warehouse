@@ -40,13 +40,13 @@ public class Management {
         JTable userTable = new JTable(userModel);
         userTable.setFillsViewportHeight(true);
         userTable.setRowHeight(25);
-        userTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        userTable.setSelectionBackground(new Color(173, 216, 230));  
         userTable.setSelectionForeground(Color.BLACK);
 
         UserManagement userManagement = new UserManagement(out, in);
         userManagement.loadUsers(userModel);
 
-        // Кнопки
+         
         JButton refreshButton = createStyledButton("Обновить");
         JButton addButton = createStyledButton("Добавить");
         JButton editButton = createStyledButton("Изменить");
@@ -62,7 +62,7 @@ public class Management {
             mainFrame.setVisible(true);
         });
 
-        // Панель для кнопок
+         
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.add(refreshButton);
@@ -71,7 +71,7 @@ public class Management {
         buttonPanel.add(deleteButton);
         buttonPanel.add(backButton);
 
-        // Разделитель
+         
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                 new JScrollPane(userTable), buttonPanel);
         splitPane.setDividerLocation(350);
@@ -92,7 +92,7 @@ public class Management {
         JTable categoryTable = new JTable(categoryModel);
         categoryTable.setFillsViewportHeight(true);
         categoryTable.setRowHeight(25);
-        categoryTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        categoryTable.setSelectionBackground(new Color(173, 216, 230));  
         categoryTable.setSelectionForeground(Color.BLACK);
 
         CategoryManagement categoryManagement = new CategoryManagement(out, in);
@@ -128,7 +128,7 @@ public class Management {
         categoryManagementFrame.setVisible(true);
     }
 
-    // Управление товарами
+     
     public void showProductManagement(JFrame mainFrame) {
         if (mainFrame != null) mainFrame.setVisible(false);
 
@@ -143,7 +143,7 @@ public class Management {
         JTable productTable = new JTable(productModel);
         productTable.setFillsViewportHeight(true);
         productTable.setRowHeight(25);
-        productTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        productTable.setSelectionBackground(new Color(173, 216, 230));  
         productTable.setSelectionForeground(Color.BLACK);
 
         ProductManagement productManagement = new ProductManagement(out, in);
@@ -193,7 +193,7 @@ public class Management {
         JTable supplierTable = new JTable(supplierModel);
         supplierTable.setFillsViewportHeight(true);
         supplierTable.setRowHeight(25);
-        supplierTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        supplierTable.setSelectionBackground(new Color(173, 216, 230));  
         supplierTable.setSelectionForeground(Color.BLACK);
 
         SupplierManagement supplierManagement = new SupplierManagement(out, in);
@@ -243,7 +243,7 @@ public class Management {
         JTable orderTable = new JTable(orderModel);
         orderTable.setFillsViewportHeight(true);
         orderTable.setRowHeight(25);
-        orderTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        orderTable.setSelectionBackground(new Color(173, 216, 230));  
         orderTable.setSelectionForeground(Color.BLACK);
 
         OrderManagement orderManagement = new OrderManagement(out, in);
@@ -293,7 +293,7 @@ public class Management {
         JTable orderitemTable = new JTable(orderitemModel);
         orderitemTable.setFillsViewportHeight(true);
         orderitemTable.setRowHeight(25);
-        orderitemTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        orderitemTable.setSelectionBackground(new Color(173, 216, 230));  
         orderitemTable.setSelectionForeground(Color.BLACK);
 
         OrderItemManagement orderItemManagement = new OrderItemManagement(out, in);
@@ -342,9 +342,9 @@ public class Management {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Создаем панель для кнопок
+         
         JPanel buttonPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-        buttonPanel.setMaximumSize(new Dimension(400, 300)); // Ограничиваем максимальный размер панели кнопок
+        buttonPanel.setMaximumSize(new Dimension(400, 300));  
 
         String[] buttonLabels = {
                 "Прием товаров",
@@ -358,15 +358,15 @@ public class Management {
         for (String label : buttonLabels) {
             JButton button = new JButton(label);
             button.setFont(new Font("Arial", Font.BOLD, 14));
-            button.setBackground(new Color(70, 130, 180)); // Цвет кнопки
+            button.setBackground(new Color(70, 130, 180));  
             button.setForeground(Color.WHITE);
             button.setFocusPainted(false);
-            button.setPreferredSize(new Dimension(240, 40)); // Устанавливаем размер кнопок
+            button.setPreferredSize(new Dimension(240, 40));  
             button.addActionListener(e -> handleButtonClick2(label, mainFrame));
             buttonPanel.add(button);
         }
 
-        // Центрируем кнопку панель в панели
+         
         buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(buttonPanel);
         transactionManagementFrame.add(panel, BorderLayout.CENTER);
@@ -411,7 +411,7 @@ public class Management {
         JTable receptionTable = new JTable(receptionModel);
         receptionTable.setFillsViewportHeight(true);
         receptionTable.setRowHeight(25);
-        receptionTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        receptionTable.setSelectionBackground(new Color(173, 216, 230));  
         receptionTable.setSelectionForeground(Color.BLACK);
 
         ReceptionManagement receptionManagement = new ReceptionManagement(out, in);
@@ -462,7 +462,7 @@ public class Management {
         JTable returnTable = new JTable(returnModel);
         returnTable.setFillsViewportHeight(true);
         returnTable.setRowHeight(25);
-        returnTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        returnTable.setSelectionBackground(new Color(173, 216, 230));  
         returnTable.setSelectionForeground(Color.BLACK);
 
         ReturnManagement returnManagement = new ReturnManagement(out, in);
@@ -518,22 +518,22 @@ public class Management {
         shipmentTable.setSelectionBackground(new Color(173, 216, 230));
         shipmentTable.setSelectionForeground(Color.BLACK);
 
-        // Загрузка данных отгрузки
+         
         ShipmentManagement shipmentManagement = new ShipmentManagement(out, in);
         shipmentManagement.loadShipment(shipmentModel);
 
-        // Создание кнопок
+         
         JButton refreshButton = createStyledButton("Обновить");
         JButton addButton = createStyledButton("Добавить");
         JButton editButton = createStyledButton("Изменить");
         JButton deleteButton = createStyledButton("Удалить");
         JButton backButton = createStyledButton("Назад");
 
-        // Обработчики событий
+         
         refreshButton.addActionListener(e -> {
             shipmentManagement.loadShipment(shipmentModel);
-            shipmentTable.revalidate();  // Обновление таблицы
-            shipmentTable.repaint();      // Перерисовка таблицы
+            shipmentTable.revalidate();   
+            shipmentTable.repaint();       
         });
         addButton.addActionListener(e -> takeShipment(shipmentModel));
         editButton.addActionListener(e -> shipmentManagement.editShipment(shipmentTable, shipmentModel));
@@ -543,7 +543,7 @@ public class Management {
             transactionManagementFrame.setVisible(true);
         });
 
-        // Создание панели кнопок
+         
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(refreshButton);
         buttonPanel.add(addButton);
@@ -551,12 +551,12 @@ public class Management {
         buttonPanel.add(deleteButton);
         buttonPanel.add(backButton);
 
-        // Создание разделенной панели
+         
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                 new JScrollPane(shipmentTable), buttonPanel);
         splitPane.setDividerLocation(450);
 
-        // Добавление компонентов в окно
+         
         shipmentFrame.add(splitPane);
         shipmentFrame.setVisible(true);
     }
@@ -573,7 +573,7 @@ public class Management {
         JTable productTable = new JTable(productModel);
         productTable.setFillsViewportHeight(true);
         productTable.setRowHeight(25);
-        productTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        productTable.setSelectionBackground(new Color(173, 216, 230));  
         productTable.setSelectionForeground(Color.BLACK);
 
         ProductManagement productManagement = new ProductManagement(out, in);
@@ -627,22 +627,22 @@ public class Management {
         moveTable.setSelectionBackground(new Color(173, 216, 230));
         moveTable.setSelectionForeground(Color.BLACK);
 
-        // Загрузка данных отгрузки
+         
         MoveManagement moveManagement = new MoveManagement(out, in);
         moveManagement.loadMove(moveModel);
 
-        // Создание кнопок
+         
         JButton refreshButton = createStyledButton("Обновить");
         JButton addButton = createStyledButton("Добавить");
         JButton editButton = createStyledButton("Изменить");
         JButton deleteButton = createStyledButton("Удалить");
         JButton backButton = createStyledButton("Назад");
 
-        // Обработчики событий
+         
         refreshButton.addActionListener(e -> {
             moveManagement.loadMove(moveModel);
-            moveTable.revalidate();  // Обновление таблицы
-            moveTable.repaint();      // Перерисовка таблицы
+            moveTable.revalidate();   
+            moveTable.repaint();       
         });
         addButton.addActionListener(e -> takeMove(moveModel));
         editButton.addActionListener(e -> moveManagement.editMove(moveTable, moveModel));
@@ -652,7 +652,7 @@ public class Management {
             transactionManagementFrame.setVisible(true);
         });
 
-        // Создание панели кнопок
+         
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(refreshButton);
         buttonPanel.add(addButton);
@@ -660,12 +660,12 @@ public class Management {
         buttonPanel.add(deleteButton);
         buttonPanel.add(backButton);
 
-        // Создание разделенной панели
+         
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                 new JScrollPane(moveTable), buttonPanel);
         splitPane.setDividerLocation(450);
 
-        // Добавление компонентов в окно
+         
         moveFrame.add(splitPane);
         moveFrame.setVisible(true);
     }
@@ -682,7 +682,7 @@ public class Management {
         JTable productTable = new JTable(productModel);
         productTable.setFillsViewportHeight(true);
         productTable.setRowHeight(25);
-        productTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        productTable.setSelectionBackground(new Color(173, 216, 230));  
         productTable.setSelectionForeground(Color.BLACK);
 
         ProductManagement productManagement = new ProductManagement(out, in);
@@ -731,7 +731,7 @@ public class Management {
         JTable  warehouseTable = new JTable(warehouseModel);
         warehouseTable.setFillsViewportHeight(true);
         warehouseTable.setRowHeight(25);
-        warehouseTable.setSelectionBackground(new Color(173, 216, 230)); // Цвет выделения
+        warehouseTable.setSelectionBackground(new Color(173, 216, 230));  
         warehouseTable.setSelectionForeground(Color.BLACK);
 
         WarehouseManagement warehouseManagement = new WarehouseManagement(out, in);
@@ -799,7 +799,7 @@ public class Management {
         editButton.addActionListener(e -> transactionManagement.editTransaction(transactionsTable, transactionsModel));
         deleteButton.addActionListener(e -> transactionManagement.deleteTransaction(transactionsTable, transactionsModel));
 
-        // Обработка нажатия кнопки "Сгенерировать отчет"
+         
         reportButton.addActionListener(e -> transactionManagement.generateReport(transactionsTable));
 
         backButton.addActionListener(e -> {
@@ -824,14 +824,14 @@ public class Management {
     }
 
 
-    // Метод для создания стилизованных кнопок
+     
     public JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBackground(new Color(70, 130, 180)); // Цвет кнопки
+        button.setBackground(new Color(70, 130, 180));  
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Отступы
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));  
         return button;
     }
 

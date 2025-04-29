@@ -54,13 +54,13 @@ public class OrderManagement {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки : " + e.getMessage());
         }
 
-        // Поле для ввода даты заказа
-        JTextField dateField = new JTextField(); // Можно заменить на JDatePicker для выбора даты
+         
+        JTextField dateField = new JTextField();  
 
-        // Выпадающий список для статуса
+         
         JComboBox<String> statusCombo = new JComboBox<>(new String[]{"В обработке", "Принят", "Отменен"});
 
-        // Создание панели для ввода данных
+         
         JPanel panel = new JPanel(new GridLayout(3, 2));
         panel.add(new JLabel("Поставщик:"));
         panel.add(suppliersCombo);
@@ -69,7 +69,7 @@ public class OrderManagement {
         panel.add(new JLabel("Статус:"));
         panel.add(statusCombo);
 
-        // Отображение диалогового окна с подтверждением
+         
         int result = JOptionPane.showConfirmDialog(
                 null, panel, "Добавить заказ",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -79,7 +79,7 @@ public class OrderManagement {
             String orderDate = dateField.getText().trim();
             String status = (String) statusCombo.getSelectedItem();
 
-            // Проверка на пустые значения
+             
             if (supplierId == null || orderDate.isEmpty() || status == null) {
                 JOptionPane.showMessageDialog(null, "Пожалуйста, заполните все поля.");
                 return;
@@ -94,7 +94,7 @@ public class OrderManagement {
                 out.println("ADD_ORDER," + supplierId + "," + orderDate + "," + status);
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadOrders(model); // Перезагрузка списка заказов
+                loadOrders(model);  
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
@@ -108,13 +108,13 @@ public class OrderManagement {
             return;
         }
 
-        // Получаем текущее значение
+         
         String orderId = model.getValueAt(selectedRow, 0).toString();
         String currentSupplierId = model.getValueAt(selectedRow, 1).toString();
         String currentOrderDate = model.getValueAt(selectedRow, 2).toString();
         String currentStatus = model.getValueAt(selectedRow, 3).toString();
 
-        // Получение списка поставщиков
+         
         JComboBox<String> supplierCombo = new JComboBox<>();
         try {
             out.println("GET_SUPPLIERS");
@@ -134,14 +134,14 @@ public class OrderManagement {
         }
         supplierCombo.setSelectedItem(currentSupplierId);
 
-        // Поле для ввода даты заказа
-        JTextField dateField = new JTextField(currentOrderDate); // Установка текущей даты
+         
+        JTextField dateField = new JTextField(currentOrderDate);  
 
-        // Выпадающий список для статуса
+         
         JComboBox<String> statusCombo = new JComboBox<>(new String[]{"В обработке", "Принят", "Отменен"});
         statusCombo.setSelectedItem(currentStatus);
 
-        // Создание панели для редактирования данных
+         
         JPanel panel = new JPanel(new GridLayout(3, 2));
         panel.add(new JLabel("Поставщик:"));
         panel.add(supplierCombo);
@@ -157,7 +157,7 @@ public class OrderManagement {
             String orderDate = dateField.getText().trim();
             String status = (String) statusCombo.getSelectedItem();
 
-            // Проверка на пустые значения
+             
             if (supplierId == null || orderDate.isEmpty() || status == null) {
                 JOptionPane.showMessageDialog(null, "Пожалуйста, заполните все поля.");
                 return;
@@ -172,7 +172,7 @@ public class OrderManagement {
                 out.println("EDIT_ORDER," + orderId + "," + supplierId + "," + orderDate + "," + status);
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadOrders(model); // Перезагрузка списка заказов
+                loadOrders(model);  
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
@@ -205,12 +205,12 @@ public class OrderManagement {
 
     private boolean isValidDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        sdf.setLenient(false); // Установка строгого режима
+        sdf.setLenient(false);  
         try {
             Date parsedDate = sdf.parse(date);
-            return true; // Если дата корректна
+            return true;  
         } catch (ParseException e) {
-            return false; // Если дата некорректна
+            return false;  
         }
     }
 }

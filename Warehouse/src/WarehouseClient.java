@@ -20,7 +20,7 @@ public class WarehouseClient extends JFrame {
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // Отступы
+        gbc.insets = new Insets(10, 10, 10, 10);  
 
         emailField = new JTextField(20);
         passwordField = new JPasswordField(20);
@@ -48,7 +48,7 @@ public class WarehouseClient extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 2; // Занимает две колонки
+        gbc.gridwidth = 2;  
         panel.add(loginButton, gbc);
 
         gbc.gridy = 3;
@@ -95,8 +95,8 @@ public class WarehouseClient extends JFrame {
                 dispose();
                 SwingUtilities.invokeLater(() -> new Analyst(socket));
             }else {
-                responseArea.setText("Недостаточно прав для доступа к панели администратора");
-                socket.close(); // Закрываем сокет, если не нужен Admin
+                responseArea.setText("Недостаточно прав для доступа");
+                socket.close();
             }
 
         } catch (IOException e) {

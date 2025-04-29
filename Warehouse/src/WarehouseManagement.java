@@ -49,7 +49,7 @@ public class WarehouseManagement {
                         volumeField.getText());
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadWarehouses(model); // Предполагается, что у вас есть метод loadWarehouses
+                loadWarehouses(model);  
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
@@ -81,7 +81,7 @@ public class WarehouseManagement {
                         volumeField.getText());
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadWarehouses(model); // Предполагается, что у вас есть метод loadWarehouses
+                loadWarehouses(model);  
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }

@@ -4,8 +4,8 @@ class Item {
     private String unit;
     private double price;
     private double volume;
-    private String category; // Изменено на строку
-    private String warehouse; // Изменено на строку
+    private String category;  
+    private String warehouse;  
 
     public Item(String name, int quantity, String unit, double price, double volume, String category, String warehouse) {
         this.name = name;
@@ -17,7 +17,7 @@ class Item {
         this.warehouse = warehouse;
     }
 
-    // Геттеры для полей
+     
     public String getName() { return name; }
     public int getQuantity() { return quantity; }
     public String getUnit() { return unit; }

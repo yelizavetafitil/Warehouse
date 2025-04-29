@@ -34,9 +34,9 @@ public class Analyst {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Создаем панель для кнопок
+         
         JPanel buttonPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-        buttonPanel.setMaximumSize(new Dimension(400, 300)); // Ограничиваем максимальный размер панели кнопок
+        buttonPanel.setMaximumSize(new Dimension(400, 300));  
 
         String[] buttonLabels = {
                 "Управление товарами",
@@ -49,15 +49,15 @@ public class Analyst {
         for (String label : buttonLabels) {
             JButton button = new JButton(label);
             button.setFont(new Font("Arial", Font.BOLD, 14));
-            button.setBackground(new Color(70, 130, 180)); // Цвет кнопки
+            button.setBackground(new Color(70, 130, 180));  
             button.setForeground(Color.WHITE);
             button.setFocusPainted(false);
-            button.setPreferredSize(new Dimension(240, 40)); // Устанавливаем размер кнопок
+            button.setPreferredSize(new Dimension(240, 40));  
             button.addActionListener(e -> handleButtonClick(label));
             buttonPanel.add(button);
         }
 
-        // Центрируем кнопку панель в панели
+         
         buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(buttonPanel);
         mainFrame.add(panel, BorderLayout.CENTER);

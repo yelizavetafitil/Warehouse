@@ -47,12 +47,12 @@ public class TransactionManagement {
 
 
     public void addTransaction(DefaultTableModel model) {
-        // Поле для ввода даты транзакции
-        JTextField dateField = new JTextField(); // Можно заменить на JDatePicker для выбора даты
+         
+        JTextField dateField = new JTextField();  
 
         JComboBox<String> typeCombo = new JComboBox<>(new String[]{"Прием товаров", "Возврат товаров", "Отгрузка товаров", "Перемещение товаров"});
 
-        // Создание панели для ввода данных
+         
         JPanel panel = new JPanel(new GridLayout(2, 2));
         panel.add(new JLabel("Дата транзакции (yyyy-mm-dd hh:mm:ss):"));
         panel.add(dateField);
@@ -60,7 +60,7 @@ public class TransactionManagement {
         panel.add(typeCombo);
 
 
-        // Отображение диалогового окна с подтверждением
+         
         int result = JOptionPane.showConfirmDialog(
                 null, panel, "Добавить транзакцию",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -74,7 +74,7 @@ public class TransactionManagement {
                 return;
             }
 
-            // Проверка на пустые значения
+             
             if (transactionDate.isEmpty() || transactionType == null) {
                 JOptionPane.showMessageDialog(null, "Пожалуйста, заполните все поля.");
                 return;
@@ -89,7 +89,7 @@ public class TransactionManagement {
                 out.println("ADD_TRANSACTIONS," + transactionDate + "," + transactionType);
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadTransactions(model); // Перезагрузка списка транзакций
+                loadTransactions(model);  
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
@@ -103,19 +103,19 @@ public class TransactionManagement {
             return;
         }
 
-        // Получаем текущее значение
+         
         String transactionId = model.getValueAt(selectedRow, 0).toString();
         String currentTransactionDate = model.getValueAt(selectedRow, 1).toString();
         String currentTransactionType = model.getValueAt(selectedRow, 2).toString();
 
-        // Поле для ввода даты транзакции
-        JTextField dateField = new JTextField(currentTransactionDate); // Установка текущей даты
+         
+        JTextField dateField = new JTextField(currentTransactionDate);  
 
-        // Выпадающий список для типа транзакции
+         
         JComboBox<String> typeCombo = new JComboBox<>(new String[]{"Прием товаров", "Возврат товаров", "Отгрузка товаров", "Перемещение товаров"});
         typeCombo.setSelectedItem(currentTransactionType);
 
-        // Создание панели для редактирования данных
+         
         JPanel panel = new JPanel(new GridLayout(2, 2));
         panel.add(new JLabel("Дата транзакции (yyyy-mm-dd hh:mm:ss):"));
         panel.add(dateField);
@@ -135,7 +135,7 @@ public class TransactionManagement {
                 return;
             }
 
-            // Проверка на пустые значения
+             
             if (transactionDate.isEmpty() || transactionType == null) {
                 JOptionPane.showMessageDialog(null, "Пожалуйста, заполните все поля.");
                 return;
@@ -150,7 +150,7 @@ public class TransactionManagement {
                 out.println("EDIT_TRANSACTIONS," + transactionId + "," + transactionDate + "," + transactionType);
                 String response = in.readLine();
                 JOptionPane.showMessageDialog(null, response);
-                loadTransactions(model); // Перезагрузка списка транзакций
+                loadTransactions(model);  
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка: " + e.getMessage());
             }
@@ -184,13 +184,13 @@ public class TransactionManagement {
 
     private boolean isValidDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setLenient(false); // Установка строгого формата
+        sdf.setLenient(false);  
         try {
             sdf.parse(date);
         } catch (ParseException e) {
-            return false; // Неверный формат
+            return false;  
         }
-        return true; // Корректный формат
+        return true;  
     }
 
     public void generateReport(JTable transactionsTable){
@@ -204,7 +204,7 @@ public class TransactionManagement {
         String transactionId = transactionsTable.getValueAt(selectedRow, 0).toString();
         String transactionType = transactionsTable.getValueAt(selectedRow, 2).toString();
 
-        // Запрос данных у пользователя
+         
         JTextField senderField = new JTextField();
         JTextField recipientField = new JTextField();
 
@@ -239,7 +239,7 @@ public class TransactionManagement {
     private List<Item> fetchTransactionItems(int transactionId, String transactionType) {
         List<Item> items = new ArrayList<>();
 
-        // Логика получения данных из базы данных (пример)
+         
         try {
             out.println("GET_TRANSACTION_ITEMS," + transactionId + "," + transactionType);
             String response;
@@ -248,7 +248,7 @@ public class TransactionManagement {
                 String[] parts = response.split(",");
                 if (parts.length < 7) {
                     JOptionPane.showMessageDialog(null, "Ошибка данных", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    continue; // Пропускаем итерацию цикла
+                    continue;  
                 }
                 Item item = new Item(parts[0], Integer.parseInt(parts[1]), parts[2],
                         Double.parseDouble(parts[3]), Double.parseDouble(parts[4]),
@@ -265,7 +265,7 @@ public class TransactionManagement {
     private void generatePDF(int transactionId, String transactionType, String sender, String recipient, List<Item> items) {
         Document document = new Document(PageSize.A4, 40, 40, 50, 30);
         try {
-            // Настройка шрифтов
+             
             BaseFont bf = BaseFont.createFont("src/resources/arialmt.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             Font titleFont = new Font(bf, 22, Font.BOLD, new BaseColor(15, 28, 63));
             Font headerFont = new Font(bf, 12, Font.BOLD, BaseColor.WHITE);
@@ -276,15 +276,15 @@ public class TransactionManagement {
             PdfWriter.getInstance(document, new FileOutputStream("накладная_" + transactionId + ".pdf"));
             document.open();
 
-            // Добавление логотип
+             
 
-            // Заголовок документа
+             
             Paragraph title = new Paragraph("ТОВАРНАЯ НАКЛАДНАЯ", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             title.setSpacingAfter(20f);
             document.add(title);
 
-            // Блок основной информации
+             
             PdfPTable infoTable = new PdfPTable(2);
             infoTable.setWidthPercentage(100);
             infoTable.setWidths(new float[]{1, 3});
@@ -299,7 +299,7 @@ public class TransactionManagement {
             document.add(infoTable);
             document.add(Chunk.NEWLINE);
 
-            // Блок грузоотправитель/грузополучатель
+             
             PdfPTable partiesTable = new PdfPTable(2);
             partiesTable.setWidthPercentage(100);
             partiesTable.setWidths(new float[]{1, 1});
@@ -310,12 +310,12 @@ public class TransactionManagement {
             document.add(partiesTable);
             document.add(Chunk.NEWLINE);
 
-            // Таблица с товарами
+             
             PdfPTable mainTable = new PdfPTable(7);
             mainTable.setWidthPercentage(100);
             mainTable.setWidths(new float[]{3, 1, 2, 1.5f, 1.5f, 2, 2});
 
-            // Заголовки таблицы
+             
             String[] headers = {"Наименование", "Кол-во", "Ед.изм", "Цена", "Объем", "Категория", "Склад"};
             for (String header : headers) {
                 PdfPCell cell = new PdfPCell(new Paragraph(header, headerFont));
@@ -325,7 +325,7 @@ public class TransactionManagement {
                 mainTable.addCell(cell);
             }
 
-            // Данные товаров
+             
             DecimalFormat df = new DecimalFormat("#,##0.00");
             for (Item item : items) {
                 addTableRow(mainTable, item.getName(), tableFont, Element.ALIGN_LEFT);
@@ -340,7 +340,7 @@ public class TransactionManagement {
             document.add(mainTable);
             document.add(Chunk.NEWLINE);
 
-            // Подпись
+             
             Paragraph sign = new Paragraph("Отпуск разрешил: ___________________________ / __________________ /", valueFont);
             sign.setAlignment(Element.ALIGN_RIGHT);
             document.add(sign);
@@ -352,7 +352,7 @@ public class TransactionManagement {
         }
     }
 
-    // Вспомогательные методы
+     
     private void addInfoCell(PdfPTable table, String text, Font font) {
         PdfPCell cell = new PdfPCell(new Paragraph(text, font));
         cell.setBorderColor(BaseColor.LIGHT_GRAY);

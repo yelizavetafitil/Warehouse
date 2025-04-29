@@ -38,7 +38,7 @@ public class OrderItemManagement {
         JLabel unitLabel = new JLabel();
         Map<String, Integer> productMap = new HashMap<>();
 
-        // Получение идентификаторов заказов
+         
         try {
             out.println("GET_ORDER_ID");
             String response;
@@ -56,7 +56,7 @@ public class OrderItemManagement {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки идентификаторов заказов: " + e.getMessage());
         }
 
-        // Получение списка продуктов
+         
         try {
             out.println("GET_PRODUCTS");
             String response;
@@ -71,12 +71,12 @@ public class OrderItemManagement {
                 }
 
                 String[] parts = response.trim().split(",");
-                if (parts.length >= 3) { // Убедитесь, что есть и склад
+                if (parts.length >= 3) {  
                     int id = Integer.parseInt(parts[0]);
                     String name = parts[1];
-                    String warehouse = parts[2]; // Получаем информацию о складе
+                    String warehouse = parts[2];  
 
-                    // Формируем имя продукта с указанием склада
+                     
                     String displayName = name + " (" + warehouse + ")";
                     productsCombo.addItem(displayName);
                     productMap.put(displayName, id);
@@ -86,7 +86,7 @@ public class OrderItemManagement {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки продуктов: " + e.getMessage());
         }
 
-        // Обработчик выбора продукта
+         
         productsCombo.addActionListener(e -> {
             String selectedProductName = (String) productsCombo.getSelectedItem();
             if (selectedProductName != null && productMap.containsKey(selectedProductName)) {
@@ -100,13 +100,13 @@ public class OrderItemManagement {
             }
         });
 
-        // Создаем Spinner для ввода количества
+         
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, 1000, 1);
         JSpinner quantitySpinner = new JSpinner(spinnerModel);
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(quantitySpinner, "#");
         quantitySpinner.setEditor(editor);
 
-        // Панель для ввода данных
+         
         JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -177,18 +177,18 @@ public class OrderItemManagement {
             return;
         }
 
-        // Получаем текущее значение
-        String orderId = model.getValueAt(selectedRow, 0).toString(); // ID заказа
-        String currentProduct = model.getValueAt(selectedRow, 2).toString(); // Название продукта с указанием склада
-        String currentQuantity = model.getValueAt(selectedRow, 3).toString(); // Количество
-        String orderDate = model.getValueAt(selectedRow, 4).toString(); // Дата заказа
+         
+        String orderId = model.getValueAt(selectedRow, 0).toString();  
+        String currentProduct = model.getValueAt(selectedRow, 2).toString();  
+        String currentQuantity = model.getValueAt(selectedRow, 3).toString();  
+        String orderDate = model.getValueAt(selectedRow, 4).toString();  
         String status = model.getValueAt(selectedRow, 5).toString();
 
         JComboBox<String> productsCombo = new JComboBox<>();
         JLabel unitLabel = new JLabel();
         Map<String, Integer> productMap = new HashMap<>();
 
-        // Получение списка продуктов
+         
         try {
             out.println("GET_PRODUCTS");
             String response;
@@ -203,12 +203,12 @@ public class OrderItemManagement {
                 }
 
                 String[] parts = response.trim().split(",");
-                if (parts.length >= 3) { // Убедитесь, что есть и склад
+                if (parts.length >= 3) {  
                     int id = Integer.parseInt(parts[0]);
                     String name = parts[1];
                     String warehouse = parts[2];
 
-                    // Формируем имя продукта с указанием склада
+                     
                     String displayName = name + " (" + warehouse + ")";
                     productsCombo.addItem(displayName);
                     productMap.put(displayName, id);
@@ -218,10 +218,10 @@ public class OrderItemManagement {
             JOptionPane.showMessageDialog(null, "Ошибка загрузки продуктов: " + e.getMessage());
         }
 
-        // Устанавливаем текущий продукт
+         
         productsCombo.setSelectedItem(currentProduct);
 
-        // Обработчик выбора продукта
+         
         productsCombo.addActionListener(e -> {
             String selectedProductName = (String) productsCombo.getSelectedItem();
             if (selectedProductName != null && productMap.containsKey(selectedProductName)) {
@@ -235,20 +235,20 @@ public class OrderItemManagement {
             }
         });
 
-        // Проверка и установка количества
-        int quantity = 1; // Значение по умолчанию
+         
+        int quantity = 1;  
         try {
-            // Извлекаем только количество, без добавления статуса "НЕХВАТКА"
+             
             quantity = Integer.parseInt(currentQuantity.replaceAll(" \\(НЕДОСТАТОК\\)", "").trim());
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Некорректное количество: " + currentQuantity);
-            return; // Выход из метода, если количество некорректно
+            return;  
         }
 
-// Создаем JSpinner с корректным значением
+ 
         JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(quantity, 1, 1000, 1));
 
-        // Создание панели для редактирования данных
+         
         JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.add(new JLabel("Идентификатор заказа: " + orderId));
@@ -257,7 +257,7 @@ public class OrderItemManagement {
         panel.add(unitLabel);
         panel.add(new JLabel("Количество:"));
         panel.add(quantitySpinner);
-        panel.add(new JLabel("Дата заказа: " + orderDate)); // Добавлено поле для даты
+        panel.add(new JLabel("Дата заказа: " + orderDate));  
         panel.add(new JLabel("Статус: " + status));
 
         int result = JOptionPane.showConfirmDialog(null, panel, "Редактировать позицию заказа", JOptionPane.OK_CANCEL_OPTION);
@@ -272,7 +272,7 @@ public class OrderItemManagement {
             }
 
             try {
-                // Получаем ID продукта из productMap
+                 
                 Integer productId = productMap.get(productName);
                 if (productId == null) {
                     JOptionPane.showMessageDialog(null, "Ошибка: не удалось определить ID продукта.");
